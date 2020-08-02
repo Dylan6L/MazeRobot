@@ -1,6 +1,8 @@
 import RPi.GPIO as GPIO
 import time
 
+time.sleep(5)
+
 # Left Front Encoder Channel
 cLeftFE = 16
 cLeftBE = 12
@@ -22,9 +24,7 @@ rDC = 0
 
 
 def sensorCallback(channel):
-    # Called if sensor output changes
-    timestamp = time.time()
-    stamp = datetime.datetime.fromtimestamp(timestamp).strftime('%H:%M:%S')
+    global cLeftFE, cLeftBE, cRightFE, cRightBE, leftFE, leftBE, rightFE, rightBE
     # If no input then sensor went high, add value to value variable
     if not GPIO.input(channel):
         if channel == cLeftFE:
@@ -50,6 +50,9 @@ try:
     GPIO.setup(cRightBE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(cRightBE, GPIO.BOTH, callback=sensorCallback, bouncetime=20)
 
+    GPIO.setup(plPWM, GPIO.OUT)
+    GPIO.setup(prPWM, GPIO.OUT)
+
     # Set up PWM (lp = Left PWM)
     lp = GPIO.PWM(plPWM, 100)
     lp.start(0)
@@ -67,6 +70,8 @@ try:
 
     lp.ChangeDutyCycle(50)
     rp.ChangeDutyCycle(50)
+    lDC = 50
+    rDC = 50
     GPIO.output(5, True)
     GPIO.output(19, False)
     GPIO.output(13, False)
@@ -80,24 +85,24 @@ try:
         # Error is negative if right side has too much power
         # Make sure its a significant difference, then add more to left
         # or remove from right: 0 <= dutycycle <= 100
-        if error < -20:
-            if lDC < 85:
-                lDC += 10
-                lp.ChangeDutyCycle(lDC)
+        if error < -5:
+            if lDC < 90:
+                lDC += 5
             else:
                 if rDC >= 10:
-                    rDC -= 10
-                    rp.ChangeDutyCycle(rDC)
-                elif error > 20:
-                    if rDC < 85:
-                        rDC += 10
-                        rp.ChangeDutyCycle(rDC)
-                    else:
-                        # WARNING - this may not work because ldc could be 0 this way
-                        if lDC >= 10:
-                            lDC -= 10
-                            lp.ChangeDutyCycle(lDC)
-        print('left: {0}, right: {1}', lDC, rDC)
+                    rDC -= 5
+        elif error > 5:
+            if rDC < 90:
+                rDC += 5
+            else:
+                # WARNING - this may not work because ldc could be 0 this way
+                if lDC >= 10:
+                    lDC -= 5
+        lp.ChangeDutyCycle(lDC)
+        rp.ChangeDutyCycle(rDC)
+        print(f'left: {le}, right: {re}')
+        print(f'left: {lDC}, right: {rDC}')
+        print('')
 
     GPIO.output(5, False)
     GPIO.output(19, False)
@@ -106,7 +111,6 @@ try:
 
     GPIO.cleanup()
 
-except Exception as e: 
+except Exception as e:
     print(e)
-    print('fail')
     GPIO.cleanup()
