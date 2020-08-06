@@ -79,6 +79,8 @@ def main():
 
 
 		# Set up PWM (lp = Left PWM)
+		GPIO.setup(plPWM, GPIO.OUT)
+		GPIO.setup(prPWM, GPIO.OUT)
 		lp = GPIO.PWM(plPWM, 100)
 		lp.start(0)
 		rp = GPIO.PWM(prPWM, 100)
