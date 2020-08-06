@@ -64,7 +64,11 @@ def sensorCallback(channel):
 def main():
 	try:
 
-		createConfig()
+		#createConfig()
+
+		pid.setKp (P)
+		pid.setKi (I)
+		pid.setKd (D)
 
 		GPIO.setmode(GPIO.BCM)
 
@@ -107,7 +111,7 @@ def main():
 
 		for i in range(0, 100):
 
-			readConfig()
+			#readConfig()
 
 			# calculate error form encoders
 			le = leftFE + leftBE
