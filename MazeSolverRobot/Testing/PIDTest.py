@@ -120,7 +120,7 @@ def main():
 
 			pid.update(error)
 			targetPwm = pid.output
-			dir = 'right' if targetPwm > 0 else 'left'
+			dir = 'left' if targetPwm > 0 else 'right'
 			print(str(dir) + ' ' + str(targetPwm))
 			targetPwm = abs(targetPwm)
 			targetPwm = max(min( int(targetPwm), 100 ),0)
@@ -128,12 +128,14 @@ def main():
 			print ("Target: %.1f C | Current: %.1f C | PWM: %s %%"%(targetT, error, targetPwm))
 
 			if dir == 'left':
-				lp.ChangeDutyCycle(targetPwm)
+				lDC = lDC + targetPwm if lDC + targetPwm < 101 else lDC = 100
+				lp.ChangeDutyCycle(lDC)
 			else:
+				rDC = rDC + targetPwm if rDC + targetPwm < 101 else rDC = 100 
 				rp.ChangeDutyCycle(targetPwm)
 
 			time.sleep(0.2)
-		
+
 		GPIO.output(5, False)
 		GPIO.output(19, False)
 		GPIO.output(13, False)

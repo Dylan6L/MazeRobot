@@ -1,8 +1,6 @@
 import RPi.GPIO as GPIO
 import time
 
-time.sleep(5)
-
 # Left Front Encoder Channel
 cLeftFE = 16
 cLeftBE = 12
@@ -23,6 +21,9 @@ lDC = 0
 rDC = 0
 
 
+motor_offset = 5
+
+
 def sensorCallback(channel):
     global cLeftFE, cLeftBE, cRightFE, cRightBE, leftFE, leftBE, rightFE, rightBE
     # If no input then sensor went high, add value to value variable
@@ -38,6 +39,8 @@ def sensorCallback(channel):
 
 
 try:
+
+    time.sleep(2)
 
     GPIO.setmode(GPIO.BCM)
 
@@ -79,27 +82,21 @@ try:
     GPIO.output(13, False)
     GPIO.output(6, True)
 
-    for i in range(0, 100):
-        time.sleep(0.1)
+    for i in range(0, 40):
+        time.sleep(0.2)
         le = leftFE + leftBE
         re = rightFE + rightBE
         error = le - re
         # Error is negative if right side has too much power
         # Make sure its a significant difference, then add more to left
         # or remove from right: 0 <= dutycycle <= 100
-        if error < -5:
-            if lDC < 90:
-                lDC += 5
-            else:
-                if rDC >= 10:
-                    rDC -= 5
-        elif error > 5:
-            if rDC < 90:
-                rDC += 5
-            else:
-                # WARNING - this may not work because ldc could be 0 this way
-                if lDC >= 10:
-                    lDC -= 5
+        if error < 0 and lDC < 100:
+            lDC += motor_offset
+            rDC -= motor_offset
+        elif rDC < 100:
+            lDC -= motor_offset
+            rDC += motor_offset
+
         lp.ChangeDutyCycle(lDC)
         rp.ChangeDutyCycle(rDC)
         print(f'left: {le}, right: {re}')
@@ -115,4 +112,17 @@ try:
 
 except Exception as e:
     print(e)
+
+    try:
+    	GPIO.setup(5, GPIO.OUT)
+    	GPIO.setup(19, GPIO.OUT)
+    	GPIO.setup(13, GPIO.OUT)
+    	GPIO.setup(6, GPIO.OUT)
+    	GPIO.output(5, False)
+    	GPIO.output(19, False)
+    	GPIO.output(13, False)
+    	GPIO.output(6, False)
+    except:
+        GPIO.cleanup()
+
     GPIO.cleanup()
