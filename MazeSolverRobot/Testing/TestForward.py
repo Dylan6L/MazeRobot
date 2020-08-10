@@ -21,7 +21,7 @@ lDC = 0
 rDC = 0
 
 
-motor_offset = 5
+motor_offset = 3
 
 
 def sensorCallback(channel):
@@ -73,27 +73,27 @@ try:
     GPIO.setup(6, GPIO.OUT)
 
 
-    lp.ChangeDutyCycle(50)
-    rp.ChangeDutyCycle(50)
-    lDC = 50
-    rDC = 50
+    lp.ChangeDutyCycle(60)
+    rp.ChangeDutyCycle(40)
+    lDC = 60
+    rDC = 40
     GPIO.output(5, True)
     GPIO.output(19, False)
     GPIO.output(13, False)
     GPIO.output(6, True)
 
-    for i in range(0, 40):
-        time.sleep(0.2)
+    for i in range(0, 20):
+        time.sleep(0.4)
         le = leftFE + leftBE
         re = rightFE + rightBE
         error = le - re
         # Error is negative if right side has too much power
         # Make sure its a significant difference, then add more to left
         # or remove from right: 0 <= dutycycle <= 100
-        if error < 0 and lDC < 100:
+        if error < -3 and lDC < 100:
             lDC += motor_offset
             rDC -= motor_offset
-        elif rDC < 100:
+        elif error > 3 and  rDC < 100:
             lDC -= motor_offset
             rDC += motor_offset
 

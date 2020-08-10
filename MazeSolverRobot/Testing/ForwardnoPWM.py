@@ -3,13 +3,22 @@ import time
 
 
 prPWM = 18
-plPWM = 19
+plPWM = 25
 
 # Left Front Encoder Value
 leftFE = 0
 leftBE = 0
 rightFE = 0
 rightBE = 0
+
+
+# Left Front Encoder Channel
+cLeftFE = 16
+cLeftBE = 12
+cRightFE = 17
+cRightBE = 4
+
+
 
 def sensorCallback(channel):
     global cLeftFE, cLeftBE, cRightFE, cRightBE, leftFE, leftBE, rightFE, rightBE
@@ -61,7 +70,7 @@ try:
     GPIO.output(6, True)
 
     for i in range(0, 100):
-        time.sleep(0.5)
+        time.sleep(0.05)
         print(f"leftFE: {leftFE} leftBE: {leftBE} rightFE: {rightFE} rightBE: {rightBE}")
 
     GPIO.output(5, False)

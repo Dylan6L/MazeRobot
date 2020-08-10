@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO
 time.sleep(5)
 
 targetT = 0
-P = 1
+P = 2
 I = 1
 D = 1
 
@@ -109,7 +109,7 @@ def main():
 		GPIO.output(6, True)
 
 
-		for i in range(0, 100):
+		for i in range(0, 40):
 
 			#readConfig()
 
@@ -120,19 +120,27 @@ def main():
 
 			pid.update(error)
 			targetPwm = pid.output
-			dir = 'left' if targetPwm > 0 else 'right'
+			dir = 'right' if targetPwm > 0 else 'left'
 			print(str(dir) + ' ' + str(targetPwm))
 			targetPwm = abs(targetPwm)
 			targetPwm = max(min( int(targetPwm), 100 ),0)
 
-			print ("Target: %.1f C | Current: %.1f C | PWM: %s %%"%(targetT, error, targetPwm))
+			print ("Target: %.1f | Current: %.1f | PWM: %s %%"%(targetT, error, targetPwm))
 
 			if dir == 'left':
-				lDC = lDC + targetPwm if lDC + targetPwm < 101 else lDC = 100
-				lp.ChangeDutyCycle(lDC)
+				lDC = targetPwm
+				#if lDC + targetPwm < 101:
+				#	lDC += targetPwm
+				#else:
+				#	lDC = 100
+				#lp.ChangeDutyCycle(lDC)
 			else:
-				rDC = rDC + targetPwm if rDC + targetPwm < 101 else rDC = 100 
-				rp.ChangeDutyCycle(targetPwm)
+				rDC = targetPwm
+				#if rDC + targetPwm < 101:
+				#	rDC += targetPwm
+				#else:
+				#	rDC = 100
+				#rp.ChangeDutyCycle(targetPwm)
 
 			time.sleep(0.2)
 
