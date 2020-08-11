@@ -1,5 +1,7 @@
 import RPi.GPIO as GPIO
 import time
+import MainNav
+
 
 def Setup():
     GPIO.setmode(GPIO.BCM)
@@ -42,12 +44,15 @@ def left():
     lv.append(-1)
 
     print('left')
-    p.ChangeDutyCycle(100)
+    #p.ChangeDutyCycle(100)
     GPIO.output(5, False)
     GPIO.output(19, False)
     GPIO.output(13, False)
     GPIO.output(6, True)
-    time.sleep(turn_time)
+    rightEnc = 0
+    while rightEnc < 43:
+        # Calculated (eng3 notebook) amount of enc values (43.173) for 90 deg turn
+        rightEnc = MainNav.get_rightenc()
     gen_stop()
     force_forward()
 
@@ -57,7 +62,7 @@ def turn_around():
     lv.append(-1)
 
     print('turn around')
-    p.ChangeDutyCycle(100)
+    #p.ChangeDutyCycle(100)
     GPIO.output(5, False)
     GPIO.output(19, True)
     GPIO.output(13, False)
@@ -69,7 +74,7 @@ def turn_around():
 
 def gen_stop():
     print('gen stop')
-    p.ChangeDutyCycle(0)
+    #p.ChangeDutyCycle(0)
     GPIO.output(5, False)
     GPIO.output(19, False)
     GPIO.output(13, False)
@@ -81,7 +86,7 @@ def stop_going_forward(going_forward, start_time):
     start_time = 0
     going_forward = False
     print('stop going forward')
-    p.ChangeDutyCycle(0)
+    #p.ChangeDutyCycle(0)
     GPIO.output(5, False)
     GPIO.output(19, False)
     GPIO.output(13, False)
@@ -199,6 +204,11 @@ def change_direction(cur_direction, turn_direction):
     elif turn_direction == 'left':
         if cur_direction == 270:
             direction = 0
+        else:
+            direction += 90
+    elif turn_direction == 'right':
+        if cur_direction == 0:
+            direction = 270
         else:
             direction += 90
 
