@@ -17,6 +17,8 @@ ECHO3 = 22
 
 
 def Setup():
+    print('setup_command')
+
     GPIO.setmode(GPIO.BCM)
 
     GPIO.setup(5, GPIO.OUT)
@@ -31,6 +33,7 @@ def Setup():
 
 
 def forward(start_time, going_forward):
+    print('forward command')
     going_forward = True
     if not start_time > 0:
         start_time = time.time()

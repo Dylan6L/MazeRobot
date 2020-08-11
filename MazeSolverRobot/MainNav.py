@@ -98,7 +98,6 @@ def main():
     # Change in motor PWM when one side has too much power
     motor_offset = 3
 
-
     time.sleep(2)
 
     try:
