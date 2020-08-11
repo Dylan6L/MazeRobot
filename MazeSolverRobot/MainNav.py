@@ -1,22 +1,7 @@
-import Commands as c
+import commands as c
 import RPi.GPIO as GPIO
 import time
 
-maze = [["O"]]
-x = 0
-y = 0
-
-front_clear = True
-left_clear = False
-forced_forward = False
-
-timf = []
-lv = []
-going_forward = False
-start_time = 0
-direction = 0
-right_motor_speed = 30
-turn_time = 1
 
 # Left Front Encoder Channel
 cLeftFE = 16
@@ -30,16 +15,10 @@ leftBE = 0
 rightFE = 0
 rightBE = 0
 
-# Pin values for PWM
-prPWM = 18
-plPWM = 19
-# Keep track of current duty cycle
-lDC = 0
-rDC = 0
 
-# Change in motor PWM when one side has too much power
-motor_offset = 3
-    
+timf = []
+
+
 def sensorCallback(channel):
     global cLeftFE, cLeftBE, cRightFE, cRightBE, leftFE, leftBE, rightFE, rightBE
     # If no input then sensor went high, add value to value variable
@@ -59,7 +38,40 @@ def get_rightenc():
     return rightFE + rightBE
 
 
+def add_time(time):
+    timf.append(time)
+
+
 def main():
+    global leftFE, leftBE, rightFE, rightBE, timf
+
+    maze = [["O"]]
+    x = 0
+    y = 0
+
+    front_clear = True
+    left_clear = False
+    forced_forward = False
+
+    lv = []
+    going_forward = False
+    start_time = 0
+    direction = 0
+    right_motor_speed = 30
+    turn_time = 1
+
+    # Pin values for PWM
+    prPWM = 18
+    plPWM = 19
+    # Keep track of current duty cycle
+    lDC = 0
+    rDC = 0
+
+    # Change in motor PWM when one side has too much power
+    motor_offset = 3
+
+
+    time.sleep(2)
 
     try:
 
@@ -101,7 +113,7 @@ def main():
                             rp.ChangeDutyCycle(50)
                             lDC = 50
                             rDC = 50
-                        else:   
+                        else:
                             le = leftFE + leftBE
                             re = rightFE + rightBE
                             error = le - re
@@ -126,11 +138,13 @@ def main():
                         c.stop_going_forward(going_forward, start_time)
                         time.sleep(0.3)
                         c.turn_around()
+                        lv.append(-1, -1)
                         direciton = c.change_direction(direction, 'turnaround')
                     else:
                         c.stop_going_forward(going_forward, start_time)
                         time.sleep(1)
                         c.left()
+                        lv.append(-1)
                         direciton = c.change_direction(direction, 'left')
 
                 # LEFT SENSOR
@@ -143,7 +157,8 @@ def main():
                     left_clear = False
 
 
-    except:
+    except Exception as e:
+        print(e)
         timf.append(time.time() - start_time)
         print(timf)
         lv.append(-1)

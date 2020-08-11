@@ -3,20 +3,21 @@ import time
 import MainNav
 
 
+TRIG = 22
+ECHO = 16
+maxTime = 0.04
+# Left
+TRIG2 = 23
+ECHO2 = 24
+# TODO give actual pins
+# Right
+TRIG3 = 27
+ECHO3 = 22
+
+
+
 def Setup():
     GPIO.setmode(GPIO.BCM)
-
-    # Front
-    TRIG = 22
-    ECHO = 16
-    maxTime = 0.04
-    # Left
-    TRIG2 = 23
-    ECHO2 = 24
-    # TODO give actual pins
-    # Right
-    TRIG3 = 27
-    ECHO3 = 22
 
     GPIO.setup(5, GPIO.OUT)
     GPIO.setup(19, GPIO.OUT)
@@ -41,8 +42,6 @@ def forward(start_time, going_forward):
 
 
 def left():
-    lv.append(-1)
-
     print('left')
     #p.ChangeDutyCycle(100)
     GPIO.output(5, False)
@@ -58,16 +57,15 @@ def left():
 
 
 def turn_around():
-    lv.append(-1)
-    lv.append(-1)
-
     print('turn around')
     #p.ChangeDutyCycle(100)
     GPIO.output(5, False)
     GPIO.output(19, True)
     GPIO.output(13, False)
     GPIO.output(6, True)
-    time.sleep(turn_time * 2)
+    rightEnc = 0
+    while rightEnc < 86:
+        rightEnc = MainNav.get_rightenc()
     # stop() could cause problem with time.time  EDIT: changed to gen_stop I think
     gen_stop()
 
@@ -82,7 +80,7 @@ def gen_stop():
 
 
 def stop_going_forward(going_forward, start_time):
-    timf.append(time.time() - start_time)
+    MainNav.add_time(time.time() - start_time)
     start_time = 0
     going_forward = False
     print('stop going forward')
@@ -94,6 +92,7 @@ def stop_going_forward(going_forward, start_time):
 
 
 def front_sense():
+    global TRIG, ECHO, maxTime
     GPIO.setup(TRIG, GPIO.OUT)
     GPIO.setup(ECHO, GPIO.IN)
 
@@ -127,6 +126,7 @@ def front_sense():
 
 
 def left_sense():
+    global TRIG2, ECHO2, maxTime
     GPIO.setup(TRIG2, GPIO.OUT)
     GPIO.setup(ECHO2, GPIO.IN)
 
@@ -159,6 +159,7 @@ def left_sense():
 
 
 def right_sense():
+    global TRIG3, ECHO3, maxTime
     GPIO.setup(TRIG3, GPIO.OUT)
     GPIO.setup(ECHO3, GPIO.IN)
 
