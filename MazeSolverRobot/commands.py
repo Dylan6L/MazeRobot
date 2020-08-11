@@ -34,7 +34,7 @@ def forward(start_time, going_forward):
     going_forward = True
     if not start_time > 0:
         start_time = time.time()
-    print('forward')
+    #print('forward')
     GPIO.output(5, True)
     GPIO.output(19, False)
     GPIO.output(13, False)
@@ -42,36 +42,52 @@ def forward(start_time, going_forward):
 
 
 def left():
-    print('left')
+    #print('left')
     #p.ChangeDutyCycle(100)
     GPIO.output(5, False)
     GPIO.output(19, False)
     GPIO.output(13, False)
     GPIO.output(6, True)
     rightEnc = 0
-    while rightEnc < 43:
+    startingRightVal = MainNav.get_rightenc()
+    while rightEnc - startingRightVal < 43:
         # Calculated (eng3 notebook) amount of enc values (43.173) for 90 deg turn
         rightEnc = MainNav.get_rightenc()
     gen_stop()
     force_forward()
 
 
+def force_forward():
+    MainNav.forced_forward = True
+    GPIO.output(5, True)
+    GPIO.output(19, False)
+    GPIO.output(13, False)
+    GPIO.output(6, True)
+
+    initTime = time.time()
+    while time.time() - initTime < 1000:
+        MainNav.tune_encoders()
+    
+    MainNav.forced_forward = False
+
+
 def turn_around():
-    print('turn around')
+    #print('turn around')
     #p.ChangeDutyCycle(100)
     GPIO.output(5, False)
     GPIO.output(19, True)
     GPIO.output(13, False)
     GPIO.output(6, True)
     rightEnc = 0
-    while rightEnc < 86:
+    startingRightVal = MainNav.get_rightenc()
+    while rightEnc - startingRightVal < 86:
         rightEnc = MainNav.get_rightenc()
     # stop() could cause problem with time.time  EDIT: changed to gen_stop I think
     gen_stop()
 
 
 def gen_stop():
-    print('gen stop')
+    #print('gen stop')
     #p.ChangeDutyCycle(0)
     GPIO.output(5, False)
     GPIO.output(19, False)
@@ -83,7 +99,7 @@ def stop_going_forward(going_forward, start_time):
     MainNav.add_time(time.time() - start_time)
     start_time = 0
     going_forward = False
-    print('stop going forward')
+    #print('stop going forward')
     #p.ChangeDutyCycle(0)
     GPIO.output(5, False)
     GPIO.output(19, False)

@@ -17,6 +17,7 @@ rightBE = 0
 
 
 timf = []
+forced_forward = False
 
 
 def sensorCallback(channel):
@@ -42,8 +43,36 @@ def add_time(time):
     timf.append(time)
 
 
+def tune_encoders():
+    print('forward_W_Enc')
+    le = leftFE + leftBE
+    re = rightFE + rightBE
+    error = le - re
+    """ Error is negative if right side has too much power
+        Make sure its a significant difference, then add more to left
+        and remove from right: 0 <= dutycycle <= 100 """
+    if error < -3 and lDC < 100:
+        lDC += motor_offset
+        rDC -= motor_offset
+    elif error > 3 and  rDC < 100:
+        lDC -= motor_offset
+        rDC += motor_offse
+    lp.ChangeDutyCycle(lDC)
+    rp.ChangeDutyCycle(rDC)
+
+
+
+def turn_left():
+    print("left")
+    c.stop_going_forward(going_forward, start_time)
+    time.sleep(1)
+    c.left()
+    lv.append(-1)
+    direciton = c.change_direction(direction, 'left')
+
+
 def main():
-    global leftFE, leftBE, rightFE, rightBE, timf
+    global leftFE, leftBE, rightFE, rightBE, timf, forced_forward
 
     maze = [["O"]]
     x = 0
@@ -51,7 +80,6 @@ def main():
 
     front_clear = True
     left_clear = False
-    forced_forward = False
 
     lv = []
     going_forward = False
@@ -109,43 +137,26 @@ def main():
                     if not left_clear:
                         if not going_forward:
                             c.forward(start_time, going_forward)
-                            lp.ChangeDutyCycle(50)
-                            rp.ChangeDutyCycle(50)
-                            lDC = 50
-                            rDC = 50
+                            print('forward')
+                            lp.ChangeDutyCycle(60)
+                            rp.ChangeDutyCycle(40)
+                            lDC = 60
+                            rDC = 40
                         else:
-                            le = leftFE + leftBE
-                            re = rightFE + rightBE
-                            error = le - re
-                            """ Error is negative if right side has too much power
-                             Make sure its a significant difference, then add more to left
-                             and remove from right: 0 <= dutycycle <= 100 """
-                            if error < -3 and lDC < 100:
-                                lDC += motor_offset
-                                rDC -= motor_offset
-                            elif error > 3 and  rDC < 100:
-                                lDC -= motor_offset
-                                rDC += motor_offset
-                            lp.ChangeDutyCycle(lDC)
-                            rp.ChangeDutyCycle(rDC)
+                            tune_encoders()
                     else:
-                        front_clear = False
-                        c.stop_going_forward()
-                        time.sleep(1)
-                        c.left(direction)
+                        turn_left()
                 else:
+                    front_clear = False
                     if not left_clear:
+                        print("turn around")
                         c.stop_going_forward(going_forward, start_time)
                         time.sleep(0.3)
                         c.turn_around()
                         lv.append(-1, -1)
                         direciton = c.change_direction(direction, 'turnaround')
                     else:
-                        c.stop_going_forward(going_forward, start_time)
-                        time.sleep(1)
-                        c.left()
-                        lv.append(-1)
-                        direciton = c.change_direction(direction, 'left')
+                        turn_left()
 
                 # LEFT SENSOR
                 distancel = c.left_sense()
