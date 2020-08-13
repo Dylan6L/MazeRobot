@@ -182,24 +182,24 @@ def right_sense():
     GPIO.setup(TRIG3, GPIO.OUT)
     GPIO.setup(ECHO3, GPIO.IN)
 
-    GPIO.output(TRIG, False)
+    GPIO.output(TRIG3, False)
 
     time.sleep(0.01)
 
-    GPIO.output(TRIG, True)
+    GPIO.output(TRIG3, True)
 
     time.sleep(0.00001)
 
-    GPIO.output(TRIG, False)
+    GPIO.output(TRIG3, False)
 
     pulse_start = time.time()
     timeout = pulse_start + maxTime
-    while GPIO.input(ECHO) == 0 and pulse_start < timeout:
+    while GPIO.input(ECHO3) == 0 and pulse_start < timeout:
         pulse_start = time.time()
 
     pulse_end = time.time()
     timeout = pulse_end + maxTime
-    while GPIO.input(ECHO) == 1 and pulse_end < timeout:
+    while GPIO.input(ECHO3) == 1 and pulse_end < timeout:
         pulse_end = time.time()
 
     pulse_duration = pulse_end - pulse_start
