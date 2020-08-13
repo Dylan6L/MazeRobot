@@ -254,3 +254,7 @@ def sense_all():
         senses.append(False)
 
     return senses
+
+
+def clean():
+    GPIO.cleanup()
