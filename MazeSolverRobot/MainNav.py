@@ -59,6 +59,7 @@ def tune_encoders():
         rDC += motor_offse
     lp.ChangeDutyCycle(lDC)
     rp.ChangeDutyCycle(rDC)
+    print(f'Left: {lDC}, Right: {rDC}')
 
 
 
@@ -90,7 +91,7 @@ def main():
 
     # Pin values for PWM
     prPWM = 18
-    plPWM = 19
+    plPWM = 25
     # Keep track of current duty cycle
     lDC = 0
     rDC = 0
@@ -135,7 +136,8 @@ def main():
                     front_clear = True
                     if not left_clear:
                         if not going_forward:
-                            c.forward(start_time, going_forward)
+                            c.forward(start_time)
+                            going_forward = False
                             print('forward')
                             lp.ChangeDutyCycle(60)
                             rp.ChangeDutyCycle(40)
@@ -144,12 +146,14 @@ def main():
                         else:
                             tune_encoders()
                     else:
+                        going_forward = False
                         turn_left()
                 else:
                     front_clear = False
                     if not left_clear:
                         print("turn around")
                         c.stop_going_forward(going_forward, start_time)
+                        going_forward = False
                         time.sleep(0.3)
                         c.turn_around()
                         lv.append(-1, -1)
