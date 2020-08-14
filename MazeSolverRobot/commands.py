@@ -32,10 +32,8 @@ def Setup():
     GPIO.output(6, False)
 
 
-def forward(start_time):
+def forward():
     print('forward command')
-    if not start_time > 0:
-        start_time = time.time()
     #print('forward')
     GPIO.output(5, True)
     GPIO.output(19, False)
@@ -97,9 +95,7 @@ def gen_stop():
     GPIO.output(6, False)
 
 
-def stop_going_forward(start_time):
-    MainNav.add_time(time.time() - start_time)
-    start_time = 0
+def stop_going_forward():
     #print('stop going forward')
     #p.ChangeDutyCycle(0)
     GPIO.output(5, False)

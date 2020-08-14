@@ -136,7 +136,9 @@ def main():
                     front_clear = True
                     if not left_clear:
                         if not going_forward:
-                            c.forward(start_time)
+                            c.forward()
+                            if not start_time > 0:
+                                start_time = time.time()
                             going_forward = False
                             print('forward')
                             lp.ChangeDutyCycle(60)
@@ -152,7 +154,9 @@ def main():
                     front_clear = False
                     if not left_clear:
                         print("turn around")
-                        c.stop_going_forward(start_time)
+                        c.stop_going_forward()
+                        add_time(time.time() - start_time)
+                        start_time = 0
                         going_forward = False
                         time.sleep(0.3)
                         c.turn_around()
