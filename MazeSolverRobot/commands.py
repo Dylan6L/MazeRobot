@@ -3,8 +3,8 @@ import time
 import MainNav
 
 #front
-TRIG = 20
-ECHO = 21
+TRIG = 21
+ECHO = 20
 maxTime = 0.04
 # Left
 TRIG2 = 23
