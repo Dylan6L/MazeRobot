@@ -65,7 +65,7 @@ def tune_encoders():
 
 def turn_left():
     print("left")
-    c.stop_going_forward(going_forward, start_time)
+    c.stop_going_forward(start_time)
     time.sleep(1)
     c.left()
     lv.append(-1)
