@@ -152,7 +152,7 @@ def main():
                     front_clear = False
                     if not left_clear:
                         print("turn around")
-                        c.stop_going_forward(going_forward, start_time)
+                        c.stop_going_forward(start_time)
                         going_forward = False
                         time.sleep(0.3)
                         c.turn_around()
