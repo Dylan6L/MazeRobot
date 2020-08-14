@@ -2,9 +2,9 @@ import RPi.GPIO as GPIO
 import time
 import MainNav
 
-
-TRIG = 22
-ECHO = 16
+#front
+TRIG = 20
+ECHO = 21
 maxTime = 0.04
 # Left
 TRIG2 = 23
