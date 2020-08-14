@@ -63,7 +63,7 @@ def tune_encoders():
 
 
 
-def turn_left():
+def turn_left(start_time):
     print("left")
     c.stop_going_forward(start_time)
     time.sleep(1)
@@ -149,7 +149,7 @@ def main():
                             tune_encoders()
                     else:
                         going_forward = False
-                        turn_left()
+                        turn_left(start_time)
                 else:
                     front_clear = False
                     if not left_clear:
@@ -163,7 +163,7 @@ def main():
                         lv.append(-1, -1)
                         direciton = c.change_direction(direction, 'turnaround')
                     else:
-                        turn_left()
+                        turn_left(start_time)
 
                 # LEFT SENSOR
                 distancel = c.left_sense()
