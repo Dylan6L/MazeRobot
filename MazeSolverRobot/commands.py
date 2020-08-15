@@ -15,7 +15,6 @@ TRIG3 = 27
 ECHO3 = 22
 
 
-
 def Setup():
     print('setup_command')
 
@@ -52,6 +51,7 @@ def left():
     startingRightVal = MainNav.get_rightenc()
     while rightEnc - startingRightVal < 43:
         # Calculated (eng3 notebook) amount of enc values (43.173) for 90 deg turn
+        print(rightEnc - startinRightVal)
         rightEnc = MainNav.get_rightenc()
     gen_stop()
     force_forward()

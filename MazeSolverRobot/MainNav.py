@@ -43,7 +43,7 @@ def add_time(time):
     timf.append(time)
 
 
-def tune_encoders():
+def tune_encoders(lp, rp):
     print('forward_W_Enc')
     le = leftFE + leftBE
     re = rightFE + rightBE
@@ -63,13 +63,21 @@ def tune_encoders():
 
 
 
-def turn_left(start_time):
+def turn_left(start_time, lp, lDC):
+    global leftFE, leftBE, rightFE, rightBE
     print("left")
     c.stop_going_forward()
     time.sleep(1)
+    lp.ChangeDutyCycle(100)
     c.left()
     lv.append(-1)
+    lp.ChangeDutyCycle(lDC)
     direciton = c.change_direction(direction, 'left')
+    leftFE = 0
+    leftBE = 0
+    rightFE = 0
+    rightBE = 0
+
 
 
 def main():
@@ -146,10 +154,10 @@ def main():
                             lDC = 60
                             rDC = 40
                         else:
-                            tune_encoders()
+                            tune_encoders(lp, rp)
                     else:
                         going_forward = False
-                        turn_left(start_time)
+                        turn_left(start_time, lp, lDC)
                         add_time(time.time() - start_time)
                         start_time = 0
                 else:
@@ -165,7 +173,7 @@ def main():
                         lv.append(-1, -1)
                         direciton = c.change_direction(direction, 'turnaround')
                     else:
-                        turn_left(start_time)
+                        turn_left(start_time, lp, lDC)
                         add_time(time.time() - start_time)
                         start_time = 0
 
