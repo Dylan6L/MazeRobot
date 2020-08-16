@@ -72,6 +72,14 @@ def turn_left(start_time, lp, rp, lDC, rDC):
     lp.ChangeDutyCycle(100)
     rp.ChangeDutyCycle(100)
     c.left()
+    rightEnc = 0
+    startingRightVal = get_rightenc()
+    while rightEnc - startingRightVal < 43:
+        # Calculated (eng3 notebook) amount of enc values (43.173) for 90 deg turn
+        print(rightEnc - startingRightVal)
+        rightEnc = get_rightenc()
+    c.gen_stop()
+    # c.force_forward()
     lv.append(-1)
     lp.ChangeDutyCycle(lDC)
     rp.ChangeDutyCycle(rDC)

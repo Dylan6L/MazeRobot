@@ -46,14 +46,6 @@ def left():
     GPIO.output(19, True)
     GPIO.output(13, False)
     GPIO.output(6, True)
-    rightEnc = 0
-    startingRightVal = MainNav.get_rightenc()
-    while rightEnc - startingRightVal < 43:
-        # Calculated (eng3 notebook) amount of enc values (43.173) for 90 deg turn
-        print(rightEnc - startingRightVal)
-        rightEnc = MainNav.get_rightenc()
-    gen_stop()
-    force_forward()
 
 
 def force_forward():
