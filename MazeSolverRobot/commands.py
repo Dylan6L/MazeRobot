@@ -9,7 +9,6 @@ maxTime = 0.04
 # Left
 TRIG2 = 23
 ECHO2 = 24
-# TODO give actual pins
 # Right
 TRIG3 = 27
 ECHO3 = 22
@@ -44,14 +43,14 @@ def left():
     #print('left')
     #p.ChangeDutyCycle(100)
     GPIO.output(5, False)
-    GPIO.output(19, False)
+    GPIO.output(19, True)
     GPIO.output(13, False)
     GPIO.output(6, True)
     rightEnc = 0
     startingRightVal = MainNav.get_rightenc()
     while rightEnc - startingRightVal < 43:
         # Calculated (eng3 notebook) amount of enc values (43.173) for 90 deg turn
-        print(rightEnc - startinRightVal)
+        print(rightEnc - startingRightVal)
         rightEnc = MainNav.get_rightenc()
     gen_stop()
     force_forward()

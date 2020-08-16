@@ -21,6 +21,7 @@ forced_forward = False
 
 
 def sensorCallback(channel):
+    print('callback')
     global cLeftFE, cLeftBE, cRightFE, cRightBE, leftFE, leftBE, rightFE, rightBE
     # If no input then sensor went high, add value to value variable
     if not GPIO.input(channel):
@@ -63,15 +64,17 @@ def tune_encoders(lp, rp):
 
 
 
-def turn_left(start_time, lp, lDC):
+def turn_left(start_time, lp, rp, lDC, rDC):
     global leftFE, leftBE, rightFE, rightBE
     print("left")
     c.stop_going_forward()
     time.sleep(1)
     lp.ChangeDutyCycle(100)
+    rp.ChangeDutyCycle(100)
     c.left()
     lv.append(-1)
     lp.ChangeDutyCycle(lDC)
+    rp.ChangeDutyCycle(rDC)
     direciton = c.change_direction(direction, 'left')
     leftFE = 0
     leftBE = 0
@@ -157,7 +160,7 @@ def main():
                             tune_encoders(lp, rp)
                     else:
                         going_forward = False
-                        turn_left(start_time, lp, lDC)
+                        turn_left(start_time, lp, rp, lDC, rDC)
                         add_time(time.time() - start_time)
                         start_time = 0
                 else:
@@ -173,7 +176,7 @@ def main():
                         lv.append(-1, -1)
                         direciton = c.change_direction(direction, 'turnaround')
                     else:
-                        turn_left(start_time, lp, lDC)
+                        turn_left(start_time, lp, rp, lDC, rDC)
                         add_time(time.time() - start_time)
                         start_time = 0
 
