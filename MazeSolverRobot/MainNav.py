@@ -15,6 +15,9 @@ leftBE = 0
 rightFE = 0
 rightBE = 0
 
+rDC = 0
+lDC = 0
+motor_offset = 3
 
 timf = []
 forced_forward = False
@@ -45,6 +48,7 @@ def add_time(time):
 
 
 def tune_encoders(lp, rp):
+    global lDC, rDC, motor_offset
     print('forward_W_Enc')
     le = leftFE + leftBE
     re = rightFE + rightBE
@@ -52,15 +56,15 @@ def tune_encoders(lp, rp):
     """ Error is negative if right side has too much power
         Make sure its a significant difference, then add more to left
         and remove from right: 0 <= dutycycle <= 100 """
-    if error < -3 and lDC < 100:
+    if error < -3 and lDC < 97:
         lDC += motor_offset
         rDC -= motor_offset
-    elif error > 3 and  rDC < 100:
+    elif error > 3 and  rDC < 97:
         lDC -= motor_offset
-        rDC += motor_offse
+        rDC += motor_offset
     lp.ChangeDutyCycle(lDC)
     rp.ChangeDutyCycle(rDC)
-    print(f'Left: {lDC}, Right: {rDC}')
+    #print(f'Left: {lDC}, Right: {rDC}')
 
 
 
@@ -92,7 +96,7 @@ def turn_left(start_time, lp, rp, lDC, rDC):
 
 
 def main():
-    global leftFE, leftBE, rightFE, rightBE, timf, forced_forward
+    global leftFE, leftBE, rightFE, rightBE, timf, forced_forward, rDC, lDC, motor_offset
 
     maze = [["O"]]
     x = 0
@@ -114,9 +118,6 @@ def main():
     # Keep track of current duty cycle
     lDC = 0
     rDC = 0
-
-    # Change in motor PWM when one side has too much power
-    motor_offset = 3
 
     time.sleep(2)
 
@@ -159,13 +160,14 @@ def main():
                             if not start_time > 0:
                                 start_time = time.time()
                             going_forward = True
-                            print('forward')
-                            lp.ChangeDutyCycle(60)
-                            rp.ChangeDutyCycle(40)
-                            lDC = 60
-                            rDC = 40
+                            print('forward \n \n \n')
+                            lp.ChangeDutyCycle(70)
+                            rp.ChangeDutyCycle(30)
+                            lDC = 70
+                            rDC = 30
                         else:
                             tune_encoders(lp, rp)
+                            print(f'Left: {lDC}, Right: {rDC}')
                     else:
                         going_forward = False
                         turn_left(start_time, lp, rp, lDC, rDC)

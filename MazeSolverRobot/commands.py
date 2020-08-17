@@ -58,7 +58,7 @@ def force_forward():
     initTime = time.time()
     while time.time() - initTime < 1000:
         MainNav.tune_encoders()
-    
+
     MainNav.forced_forward = False
 
 
@@ -194,7 +194,7 @@ def right_sense():
 
 
 def change_direction(cur_direction, turn_direction):
-    
+
     direction = cur_direction
 
     if turn_direction == 'turnaround':
