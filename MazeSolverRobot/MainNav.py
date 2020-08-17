@@ -158,7 +158,7 @@ def main():
                             c.forward()
                             if not start_time > 0:
                                 start_time = time.time()
-                            going_forward = False
+                            going_forward = True
                             print('forward')
                             lp.ChangeDutyCycle(60)
                             rp.ChangeDutyCycle(40)
