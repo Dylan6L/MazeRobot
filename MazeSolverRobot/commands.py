@@ -43,6 +43,7 @@ def left():
     #print('left')
     #p.ChangeDutyCycle(100)
     GPIO.output(5, False)
+    # make 19 True for pinpoint turn
     GPIO.output(19, True)
     GPIO.output(13, False)
     GPIO.output(6, True)

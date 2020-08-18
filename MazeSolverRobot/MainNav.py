@@ -2,6 +2,8 @@ import commands as c
 import RPi.GPIO as GPIO
 import time
 
+# TODO after first turn encoders do not detect much
+# Maybe check encoders in another script running parallel
 
 # Left Front Encoder Channel
 cLeftFE = 16
@@ -24,7 +26,7 @@ forced_forward = False
 
 
 def sensorCallback(channel):
-    print('callback')
+    # print('callback')
     global cLeftFE, cLeftBE, cRightFE, cRightBE, leftFE, leftBE, rightFE, rightBE
     # If no input then sensor went high, add value to value variable
     if not GPIO.input(channel):
@@ -36,6 +38,7 @@ def sensorCallback(channel):
             rightFE += 1
         elif channel == cRightBE:
             rightBE += 1
+    print(f'right: {rightFE}, {rightBE}, Left: {leftFE}, {leftBE}')
 
 
 def get_rightenc():
@@ -56,10 +59,10 @@ def tune_encoders(lp, rp):
     """ Error is negative if right side has too much power
         Make sure its a significant difference, then add more to left
         and remove from right: 0 <= dutycycle <= 100 """
-    if error < -3 and lDC < 97:
+    if error < -motor_offset and lDC < 100 - motor_offset:
         lDC += motor_offset
         rDC -= motor_offset
-    elif error > 3 and  rDC < 97:
+    elif error > motor_offset and  rDC < 100 - motor_offset:
         lDC -= motor_offset
         rDC += motor_offset
     lp.ChangeDutyCycle(lDC)
@@ -68,37 +71,40 @@ def tune_encoders(lp, rp):
 
 
 
-def turn_left(start_time, lp, rp, lDC, rDC):
-    global leftFE, leftBE, rightFE, rightBE
+def turn_left(start_time, lp, rp):
+    global leftFE, leftBE, rightFE, rightBE, lDC, rDC
     print("left")
     c.stop_going_forward()
     time.sleep(1)
     lp.ChangeDutyCycle(100)
     rp.ChangeDutyCycle(100)
     c.left()
+
+    # wait for full 90 turn
     rightEnc = 0
     startingRightVal = get_rightenc()
-    while rightEnc - startingRightVal < 43:
+    while rightEnc - startingRightVal < 11:
         # Calculated (eng3 notebook) amount of enc values (43.173) for 90 deg turn
         print(rightEnc - startingRightVal)
         rightEnc = get_rightenc()
+
     c.gen_stop()
     c.force_forward()
 
-    # wait for 90 turn to complete
+    # force forward
     initTime = time.time()
     while time.time() - initTime < 1000:
-        tune_encoders()
+        tune_encoders(lp, rp)
 
     forced_forward = False
     lv.append(-1)
     lp.ChangeDutyCycle(lDC)
     rp.ChangeDutyCycle(rDC)
     direciton = c.change_direction(direction, 'left')
-    leftFE = 0
-    leftBE = 0
-    rightFE = 0
-    rightBE = 0
+    #leftFE = 0
+    #leftBE = 0
+    #rightFE = 0
+    #rightBE = 0
 
 
 
@@ -137,13 +143,13 @@ def main():
 
         # Encoders
         GPIO.setup(cLeftFE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(cLeftFE, GPIO.BOTH, callback=sensorCallback, bouncetime=200)
+        GPIO.add_event_detect(cLeftFE, GPIO.BOTH, callback=sensorCallback, bouncetime=20)
         GPIO.setup(cLeftBE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(cLeftBE, GPIO.BOTH, callback=sensorCallback, bouncetime=200)
+        GPIO.add_event_detect(cLeftBE, GPIO.BOTH, callback=sensorCallback, bouncetime=20)
         GPIO.setup(cRightFE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(cRightFE, GPIO.BOTH, callback=sensorCallback, bouncetime=200)
+        GPIO.add_event_detect(cRightFE, GPIO.BOTH, callback=sensorCallback, bouncetime=20)
         GPIO.setup(cRightBE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(cRightBE, GPIO.BOTH, callback=sensorCallback, bouncetime=200)
+        GPIO.add_event_detect(cRightBE, GPIO.BOTH, callback=sensorCallback, bouncetime=20)
 
         GPIO.setup(plPWM, GPIO.OUT)
         GPIO.setup(prPWM, GPIO.OUT)
@@ -168,16 +174,17 @@ def main():
                                 start_time = time.time()
                             going_forward = True
                             print('forward \n \n \n')
-                            lp.ChangeDutyCycle(70)
-                            rp.ChangeDutyCycle(30)
-                            lDC = 70
-                            rDC = 30
+                            lp.ChangeDutyCycle(60)
+                            rp.ChangeDutyCycle(40)
+                            lDC = 60
+                            rDC = 40
                         else:
                             tune_encoders(lp, rp)
                             print(f'Left: {lDC}, Right: {rDC}')
                     else:
+                        time.sleep(0.3)
                         going_forward = False
-                        turn_left(start_time, lp, rp, lDC, rDC)
+                        turn_left(start_time, lp, rp)
                         add_time(time.time() - start_time)
                         start_time = 0
                 else:
@@ -194,13 +201,13 @@ def main():
                         # wait for 180 turn to complete
                         rightEnc = 0
                         startingRightVal = get_rightenc()
-                        while rightEnc - startingRightVal < 86:
+                        while rightEnc - startingRightVal < 22:
                             rightEnc = get_rightenc()
 
                         lv.append(-1, -1)
                         direciton = c.change_direction(direction, 'turnaround')
                     else:
-                        turn_left(start_time, lp, rp, lDC, rDC)
+                        turn_left(start_time, lp, rp)
                         add_time(time.time() - start_time)
                         start_time = 0
 
