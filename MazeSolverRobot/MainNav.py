@@ -83,7 +83,14 @@ def turn_left(start_time, lp, rp, lDC, rDC):
         print(rightEnc - startingRightVal)
         rightEnc = get_rightenc()
     c.gen_stop()
-    # c.force_forward()
+    c.force_forward()
+
+    # wait for 90 turn to complete
+    initTime = time.time()
+    while time.time() - initTime < 1000:
+        tune_encoders()
+
+    forced_forward = False
     lv.append(-1)
     lp.ChangeDutyCycle(lDC)
     rp.ChangeDutyCycle(rDC)
@@ -183,6 +190,13 @@ def main():
                         going_forward = False
                         time.sleep(0.3)
                         c.turn_around()
+
+                        # wait for 180 turn to complete
+                        rightEnc = 0
+                        startingRightVal = get_rightenc()
+                        while rightEnc - startingRightVal < 86:
+                            rightEnc = get_rightenc()
+
                         lv.append(-1, -1)
                         direciton = c.change_direction(direction, 'turnaround')
                     else:

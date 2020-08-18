@@ -55,12 +55,6 @@ def force_forward():
     GPIO.output(13, False)
     GPIO.output(6, True)
 
-    initTime = time.time()
-    while time.time() - initTime < 1000:
-        MainNav.tune_encoders()
-
-    MainNav.forced_forward = False
-
 
 def turn_around():
     #print('turn around')
@@ -69,10 +63,6 @@ def turn_around():
     GPIO.output(19, True)
     GPIO.output(13, False)
     GPIO.output(6, True)
-    rightEnc = 0
-    startingRightVal = MainNav.get_rightenc()
-    while rightEnc - startingRightVal < 86:
-        rightEnc = MainNav.get_rightenc()
     # stop() could cause problem with time.time  EDIT: changed to gen_stop I think
     gen_stop()
 
