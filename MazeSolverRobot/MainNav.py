@@ -143,13 +143,13 @@ def main():
 
         # Encoders
         GPIO.setup(cLeftFE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(cLeftFE, GPIO.BOTH, callback=sensorCallback, bouncetime=20)
+        GPIO.add_event_detect(cLeftFE, GPIO.BOTH, callback=sensorCallback)
         GPIO.setup(cLeftBE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(cLeftBE, GPIO.BOTH, callback=sensorCallback, bouncetime=20)
+        GPIO.add_event_detect(cLeftBE, GPIO.BOTH, callback=sensorCallback)
         GPIO.setup(cRightFE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(cRightFE, GPIO.BOTH, callback=sensorCallback, bouncetime=20)
+        GPIO.add_event_detect(cRightFE, GPIO.BOTH, callback=sensorCallback)
         GPIO.setup(cRightBE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(cRightBE, GPIO.BOTH, callback=sensorCallback, bouncetime=20)
+        GPIO.add_event_detect(cRightBE, GPIO.BOTH, callback=sensorCallback)
 
         GPIO.setup(plPWM, GPIO.OUT)
         GPIO.setup(prPWM, GPIO.OUT)
